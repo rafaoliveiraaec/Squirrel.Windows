@@ -79,12 +79,7 @@ namespace Squirrel.Json
     [GeneratedCode("simple-json", "1.0.0")]
     [EditorBrowsable(EditorBrowsableState.Never)]
     [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
-#if SIMPLE_JSON_OBJARRAYINTERNAL
-    internal
-#else
-    public
-#endif
- class JsonArray : List<object>
+ public class JsonArray : List<object>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonArray"/> class. 
@@ -494,12 +489,7 @@ namespace Squirrel.Json
     /// All numbers are parsed to doubles.
     /// </summary>
     [GeneratedCode("simple-json", "1.0.0")]
-#if SIMPLE_JSON_INTERNAL
-    internal
-#else
-    public
-#endif
- static class SimpleJson
+ public static class SimpleJson
     {
         private const int TOKEN_NONE = 0;
         private const int TOKEN_CURLY_OPEN = 1;
@@ -1224,12 +1214,7 @@ namespace Squirrel.Json
     }
     
     [GeneratedCode("simple-json", "1.0.0")]
-#if SIMPLE_JSON_INTERNAL
-    internal
-#else
-    public
-#endif
- interface IJsonSerializerStrategy
+ public interface IJsonSerializerStrategy
     {
         [SuppressMessage("Microsoft.Design", "CA1007:UseGenericsWhereAppropriate", Justification="Need to support .NET 2")]
         bool TrySerializeNonPrimitiveObject(object input, out object output);
@@ -1237,12 +1222,8 @@ namespace Squirrel.Json
     }
 
     [GeneratedCode("simple-json", "1.0.0")]
-#if SIMPLE_JSON_INTERNAL
-    internal
-#else
-    public
-#endif
- class PocoJsonSerializerStrategy : IJsonSerializerStrategy
+
+ public class PocoJsonSerializerStrategy : IJsonSerializerStrategy
     {
         internal IDictionary<Type, ReflectionUtils.ConstructorDelegate> ConstructorCache;
         internal IDictionary<Type, IDictionary<string, ReflectionUtils.GetDelegate>> GetCache;
@@ -1514,14 +1495,8 @@ namespace Squirrel.Json
         }
     }
 
-#if SIMPLE_JSON_DATACONTRACT
     [GeneratedCode("simple-json", "1.0.0")]
-#if SIMPLE_JSON_INTERNAL
-    internal
-#else
-    public
-#endif
- class DataContractJsonSerializerStrategy : PocoJsonSerializerStrategy
+    public class DataContractJsonSerializerStrategy : PocoJsonSerializerStrategy
     {
         public DataContractJsonSerializerStrategy()
         {
@@ -1590,8 +1565,6 @@ namespace Squirrel.Json
             return true;
         }
     }
-
-#endif
 
     namespace Reflection
     {

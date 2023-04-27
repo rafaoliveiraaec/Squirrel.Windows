@@ -11,7 +11,7 @@ using Mono.Cecil;
 
 namespace Squirrel
 {
-    static class SquirrelAwareExecutableDetector
+    public static class SquirrelAwareExecutableDetector
     {
         public static List<string> GetAllSquirrelAwareApps(string directory, int minimumVersion = 1)
         {

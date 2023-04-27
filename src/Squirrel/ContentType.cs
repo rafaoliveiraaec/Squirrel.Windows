@@ -4,7 +4,7 @@ using System.Xml;
 
 namespace Squirrel
 {
-    internal static class ContentType
+    public static class ContentType
     {
         public static void Clean(XmlDocument doc)
         {

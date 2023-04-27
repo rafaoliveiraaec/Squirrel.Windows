@@ -2,21 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
-using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Reflection;
-using System.Security.AccessControl;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Win32;
-using NuGet;
 using Squirrel.SimpleSplat;
 using Squirrel.Shell;
+using NuGet;
 
 namespace Squirrel
 {
@@ -296,7 +291,7 @@ namespace Squirrel
         /// <param name="stepStartPercentage">The start percentage of the range the current step represents.</param>
         /// <param name="stepEndPercentage">The end percentage of the range the current step represents.</param>
         /// <returns>The calculated percentage that can be reported about the total progress.</returns>
-        internal static int CalculateProgress(int percentageOfCurrentStep, int stepStartPercentage, int stepEndPercentage)
+        public static int CalculateProgress(int percentageOfCurrentStep, int stepStartPercentage, int stepEndPercentage)
         {
             // Ensure we are between 0 and 100
             percentageOfCurrentStep = Math.Max(Math.Min(percentageOfCurrentStep, 100), 0);

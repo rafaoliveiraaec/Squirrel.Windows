@@ -10,15 +10,15 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using MarkdownSharp;
-using NuGet;
 using Squirrel.SimpleSplat;
 using System.Threading.Tasks;
 using SharpCompress.Archives.Zip;
 using SharpCompress.Readers;
+using NuGet;
 
 namespace Squirrel
 {
-    internal static class FrameworkTargetVersion
+    public static class FrameworkTargetVersion
     {
         public static FrameworkName Net40 = new FrameworkName(".NETFramework,Version=v4.0");
         public static FrameworkName Net45 = new FrameworkName(".NETFramework,Version=v4.5");
@@ -314,7 +314,7 @@ namespace Squirrel
             xdoc.Save(specPath);
         }
 
-        internal IEnumerable<IPackage> findAllDependentPackages(
+        public IEnumerable<IPackage> findAllDependentPackages(
             IPackage package = null,
             IPackageRepository packageRepository = null,
             HashSet<string> packageCache = null,

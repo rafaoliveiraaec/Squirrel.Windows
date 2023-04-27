@@ -38,7 +38,7 @@ namespace Squirrel.Bsdiff
     IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
     POSSIBILITY OF SUCH DAMAGE.
     */
-    class BinaryPatchUtility
+    public class BinaryPatchUtility
     {
         /// <summary>
         /// Creates a binary patch (in <a href="http://www.daemonology.net/bsdiff/">bsdiff</a> format) that can be used
@@ -113,7 +113,7 @@ namespace Squirrel.Bsdiff
             int eblen = 0;
 
             using (WrappingStream wrappingStream = new WrappingStream(output, Ownership.None))
-            using (var bz2Stream = new BZip2Stream(wrappingStream, CompressionMode.Compress))
+            using (var bz2Stream = new BZip2Stream(wrappingStream, CompressionMode.Compress, false))
             {
                 // compute the differences, writing ctrl as we go
                 int scan = 0;
@@ -231,7 +231,7 @@ namespace Squirrel.Bsdiff
 
             // write compressed diff data
             using (WrappingStream wrappingStream = new WrappingStream(output, Ownership.None))
-            using (var bz2Stream = new BZip2Stream(wrappingStream, CompressionMode.Compress))
+            using (var bz2Stream = new BZip2Stream(wrappingStream, CompressionMode.Compress, false))
             {
                 bz2Stream.Write(db, 0, dblen);
             }
@@ -244,7 +244,7 @@ namespace Squirrel.Bsdiff
             if (eblen > 0)
             {
                 using (WrappingStream wrappingStream = new WrappingStream(output, Ownership.None))
-                using (var bz2Stream = new BZip2Stream(wrappingStream, CompressionMode.Compress))
+                using (var bz2Stream = new BZip2Stream(wrappingStream, CompressionMode.Compress, false))
                 {
                     bz2Stream.Write(eb, 0, eblen);
                 }
@@ -333,9 +333,9 @@ namespace Squirrel.Bsdiff
                 var hasExtraData = compressedExtraStream.Position < compressedExtraStream.Length;
 
                 // decompress each part (to read it)
-                using (var controlStream = new BZip2Stream(compressedControlStream, CompressionMode.Decompress))
-                using (var diffStream = new BZip2Stream(compressedDiffStream, CompressionMode.Decompress))
-                using (var extraStream = hasExtraData ? new BZip2Stream(compressedExtraStream, CompressionMode.Decompress) : null)
+                using (var controlStream = new BZip2Stream(compressedControlStream, CompressionMode.Decompress, false))
+                using (var diffStream = new BZip2Stream(compressedDiffStream, CompressionMode.Decompress, false))
+                using (var extraStream = hasExtraData ? new BZip2Stream(compressedExtraStream, CompressionMode.Decompress, false) : null)
                 {
                     long[] control = new long[3];
                     byte[] buffer = new byte[8];

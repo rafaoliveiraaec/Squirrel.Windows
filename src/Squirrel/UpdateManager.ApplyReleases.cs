@@ -18,7 +18,7 @@ namespace Squirrel
 {
     public sealed partial class UpdateManager
     {
-        internal class ApplyReleasesImpl : IEnableLogger
+        public class ApplyReleasesImpl : IEnableLogger
         {
             readonly string rootAppDirectory;
 
@@ -532,7 +532,7 @@ namespace Squirrel
                 this.Log().Info("Finished shortcut successfully");
             }
 
-            internal void unshimOurselves()
+            public void unshimOurselves()
             {
                 new[] { RegistryView.Registry32, RegistryView.Registry64 }.ForEach(view => {
                     var baseKey = default(RegistryKey);
@@ -677,7 +677,7 @@ namespace Squirrel
                 return File.Exists(Path.Combine(appFolderPath, ".dead"));
             }
 
-            internal async Task<List<ReleaseEntry>> updateLocalReleasesFile()
+            public async Task<List<ReleaseEntry>> updateLocalReleasesFile()
             {
                 return await Task.Run(() => ReleaseEntry.BuildReleasesFile(Utility.PackageDirectoryForAppDir(rootAppDirectory)));
             }

@@ -20,7 +20,7 @@ using NuGet;
 
 namespace Squirrel
 {
-    static class Utility
+    public static class Utility
     {
         public static string RemoveByteOrderMarkerIfPresent(string content)
         {
@@ -239,7 +239,7 @@ namespace Squirrel
                     .ToString();
         });
 
-        internal static string tempNameForIndex(int index, string prefix)
+        public static string tempNameForIndex(int index, string prefix)
         {
             if (index < directoryChars.Value.Length) {
                 return prefix + directoryChars.Value[index];
@@ -778,7 +778,7 @@ namespace Squirrel
         }
     }
 
-    static unsafe class UnsafeUtility
+    public static unsafe class UnsafeUtility
     {
         public static List<Tuple<string, int>> EnumerateProcesses()
         {
@@ -872,7 +872,7 @@ namespace Squirrel
         }
     }
 
-    static class Disposable
+    public static class Disposable
     {
         public static IDisposable Create(Action action)
         {
