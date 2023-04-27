@@ -21,7 +21,7 @@ namespace Squirrel.Update
         internal string setupIcon { get; private set; } = default(string);
         internal string icon { get; private set; } = default(string);
         internal string shortcutArgs { get; private set; } = default(string);
-        internal string frameworkVersion { get; private set; } = "net45";
+        internal string frameworkVersion { get; private set; } = "net72";
         internal bool shouldWait { get; private set; } = false;
         internal bool noMsi { get; private set; } = (Environment.OSVersion.Platform != PlatformID.Win32NT);        // NB: WiX doesn't work under Mono / Wine
         internal bool packageAs64Bit { get; private set; } = false;
