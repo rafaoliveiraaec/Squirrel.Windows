@@ -139,11 +139,26 @@
     <Compile Include="OperationResolution\UpdateUtility.cs" />
     <Compile Include="OperationResolution\VirtualProjectManager.cs" />
     <Compile Include="PackageRestoreConsent.cs" />
-    <Compile Include="Packages\LocalPackage.cs" />
-    <Compile Include="Packages\OptimizedZipPackage.cs" />
-    <Compile Include="Packages\UnzippedPackage.cs" />
     <Compile Include="PackageWalker\DependencyVersion.cs" />
     <Compile Include="PackageWalker\NuGetVersionNotSatisfiedException.cs" />
+    <Compile Include="Package\Constants.cs" />
+    <Compile Include="Package\DataServicePackage.cs" />
+    <Compile Include="Package\DefaultPackagePathResolver.cs" />
+    <Compile Include="Package\FrameworkAssemblyReference.cs" />
+    <Compile Include="Package\IFrameworkTargetable.cs" />
+    <Compile Include="Package\IPackage.cs" />
+    <Compile Include="Package\IPackageAssemblyReference.cs" />
+    <Compile Include="Package\IPackageFile.cs" />
+    <Compile Include="Package\IPackageMetadata.cs" />
+    <Compile Include="Package\IPackagePathResolver.cs" />
+    <Compile Include="Package\IServerPackageMetadata.cs" />
+    <Compile Include="Package\LocalPackage.cs" />
+    <Compile Include="Package\OptimizedZipPackage.cs" />
+    <Compile Include="Package\PackageDependency.cs" />
+    <Compile Include="Package\UnzippedPackage.cs" />
+    <Compile Include="Package\ZipPackage.cs" />
+    <Compile Include="Package\ZipPackageAssemblyReference.cs" />
+    <Compile Include="Package\ZipPackageFile.cs" />
     <Compile Include="ProjectSystem\ProjectImportLocation.cs" />
     <Compile Include="Properties\CommonAssemblyInfo.cs" />
     <Compile Include="Repositories\ILatestPackageLookup.cs" />
@@ -172,10 +187,6 @@
     <Compile Include="PackageSource\IPackageSourceProvider.cs" />
     <Compile Include="PackageSource\PackageSourceProvider.cs" />
     <Compile Include="PackageSource\PackageSourceProviderExtensions.cs" />
-    <Compile Include="Packages\FrameworkAssemblyReference.cs" />
-    <Compile Include="Packages\IFrameworkTargetable.cs" />
-    <Compile Include="Packages\IPackageMetadata.cs" />
-    <Compile Include="Packages\IServerPackageMetadata.cs" />
     <Compile Include="PackageWalker\ConflictResult.cs" />
     <Compile Include="Repositories\IDependencyResolver.cs" />
     <Compile Include="PackageWalker\PackageSorter.cs" />
@@ -273,10 +284,6 @@
     <Compile Include="Authoring\PathResolver.cs" />
     <Compile Include="Authoring\Manifest.cs" />
     <Compile Include="PackageSource\PackageSource.cs" />
-    <Compile Include="Packages\DataServicePackage.cs" />
-    <Compile Include="Packages\DefaultPackagePathResolver.cs" />
-    <Compile Include="Packages\IPackage.cs" />
-    <Compile Include="Packages\IPackagePathResolver.cs" />
     <Compile Include="ProjectManager.cs" />
     <Compile Include="FileModifiers\IPackageFileTransformer.cs" />
     <Compile Include="Repositories\DataServicePackageRepository.cs" />
@@ -286,9 +293,6 @@
     <Compile Include="Utility\IHashProvider.cs" />
     <Compile Include="Utility\PackageEqualityComparer.cs" />
     <Compile Include="PackageWalker\PackageMarker.cs" />
-    <Compile Include="Packages\ZipPackage.cs" />
-    <Compile Include="Packages\IPackageAssemblyReference.cs" />
-    <Compile Include="Packages\ZipPackageAssemblyReference.cs" />
     <Compile Include="PackageWalker\PackageWalker.cs" />
     <Compile Include="PackageWalker\InstallWalker.cs" />
     <Compile Include="PackageWalker\UpdateWalker.cs" />
@@ -316,15 +320,11 @@
     <Compile Include="ProjectSystem\IProjectSystem.cs" />
     <Compile Include="Repositories\PackageRepositoryBase.cs" />
     <Compile Include="Repositories\IPackageRepository.cs" />
-    <Compile Include="Packages\Constants.cs" />
-    <Compile Include="Packages\IPackageFile.cs" />
-    <Compile Include="Packages\PackageDependency.cs" />
     <Compile Include="Repositories\LocalPackageRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\UriUtility.cs" />
     <Compile Include="Utility\VersionUtility.cs" />
     <Compile Include="Extensions\XElementExtensions.cs" />
-    <Compile Include="Packages\ZipPackageFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Authoring\nuspec.xsd">
