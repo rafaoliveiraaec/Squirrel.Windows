@@ -24,7 +24,7 @@ namespace Squirrel
     {
         public static string RemoveByteOrderMarkerIfPresent(string content)
         {
-            return string.IsNullOrEmpty(content) ? 
+            return string.IsNullOrEmpty(content) ?
                 string.Empty : RemoveByteOrderMarkerIfPresent(Encoding.UTF8.GetBytes(content));
         }
 
@@ -32,11 +32,13 @@ namespace Squirrel
         {
             byte[] output = { };
 
-            if (content == null) {
+            if (content == null)
+            {
                 goto done;
             }
 
-            Func<byte[], byte[], bool> matches = (bom, src) => {
+            Func<byte[], byte[], bool> matches = (bom, src) =>
+            {
                 if (src.Length < bom.Length) return false;
 
                 return !bom.Where((chr, index) => src[index] != chr).Any();
@@ -48,22 +50,34 @@ namespace Squirrel
             var utf16Le = new byte[] { 0xFF, 0xFE };
             var utf8 = new byte[] { 0xEF, 0xBB, 0xBF };
 
-            if (matches(utf32Be, content)) {
+            if (matches(utf32Be, content))
+            {
                 output = new byte[content.Length - utf32Be.Length];
-            } else if (matches(utf32Le, content)) {
+            }
+            else if (matches(utf32Le, content))
+            {
                 output = new byte[content.Length - utf32Le.Length];
-            } else if (matches(utf16Be, content)) {
+            }
+            else if (matches(utf16Be, content))
+            {
                 output = new byte[content.Length - utf16Be.Length];
-            } else if (matches(utf16Le, content)) {
+            }
+            else if (matches(utf16Le, content))
+            {
                 output = new byte[content.Length - utf16Le.Length];
-            } else if (matches(utf8, content)) {
+            }
+            else if (matches(utf8, content))
+            {
                 output = new byte[content.Length - utf8.Length];
-            } else {
+            }
+            else
+            {
                 output = content;
             }
 
         done:
-            if (output.Length > 0) {
+            if (output.Length > 0)
+            {
                 Buffer.BlockCopy(content, content.Length - output.Length, output, 0, output.Length);
             }
 
@@ -88,7 +102,8 @@ namespace Squirrel
         {
             Contract.Requires(filePath != null);
 
-            using (var stream = File.OpenRead(filePath)) {
+            using (var stream = File.OpenRead(filePath))
+            {
                 return CalculateStreamSHA1(stream);
             }
         }
@@ -97,7 +112,8 @@ namespace Squirrel
         {
             Contract.Requires(file != null && file.CanRead);
 
-            using (var sha1 = SHA1.Create()) {
+            using (var sha1 = SHA1.Create())
+            {
                 return BitConverter.ToString(sha1.ComputeHash(file)).Replace("-", String.Empty);
             }
         }
@@ -116,7 +132,8 @@ namespace Squirrel
 
             var ret = new WebClient();
             var wp = WebRequest.DefaultWebProxy;
-            if (wp != null) {
+            if (wp != null)
+            {
                 wp.Credentials = CredentialCache.DefaultCredentials;
                 ret.Proxy = wp;
             }
@@ -129,7 +146,8 @@ namespace Squirrel
             Contract.Requires(!String.IsNullOrEmpty(from) && File.Exists(from));
             Contract.Requires(!String.IsNullOrEmpty(to));
 
-            if (!File.Exists(from)) {
+            if (!File.Exists(from))
+            {
                 Log().Warn("The file {0} does not exist", from);
 
                 // TODO: should we fail this operation?
@@ -144,7 +162,8 @@ namespace Squirrel
         {
             Contract.Requires(retries > 0);
 
-            Func<object> thunk = () => {
+            Func<object> thunk = () =>
+            {
                 block();
                 return null;
             };
@@ -156,12 +175,17 @@ namespace Squirrel
         {
             Contract.Requires(retries > 0);
 
-            while (true) {
-                try {
+            while (true)
+            {
+                try
+                {
                     T ret = block();
                     return ret;
-                } catch (Exception) {
-                    if (retries == 0) {
+                }
+                catch (Exception)
+                {
+                    if (retries == 0)
+                    {
                         throw;
                     }
 
@@ -174,7 +198,8 @@ namespace Squirrel
         public static Task<Tuple<int, string>> InvokeProcessAsync(string fileName, string arguments, CancellationToken ct, string workingDirectory = "")
         {
             var psi = new ProcessStartInfo(fileName, arguments);
-            if (Environment.OSVersion.Platform != PlatformID.Win32NT && fileName.EndsWith (".exe", StringComparison.OrdinalIgnoreCase)) {
+            if (Environment.OSVersion.Platform != PlatformID.Win32NT && fileName.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+            {
                 psi = new ProcessStartInfo("wine", fileName + " " + arguments);
             }
 
@@ -192,22 +217,27 @@ namespace Squirrel
         public static async Task<Tuple<int, string>> InvokeProcessAsync(ProcessStartInfo psi, CancellationToken ct)
         {
             var pi = Process.Start(psi);
-            await Task.Run(() => {
-                while (!ct.IsCancellationRequested) {
+            await Task.Run(() =>
+            {
+                while (!ct.IsCancellationRequested)
+                {
                     if (pi.WaitForExit(2000)) return;
                 }
 
-                if (ct.IsCancellationRequested) {
+                if (ct.IsCancellationRequested)
+                {
                     pi.Kill();
                     ct.ThrowIfCancellationRequested();
                 }
             });
 
             string textResult = await pi.StandardOutput.ReadToEndAsync();
-            if (String.IsNullOrWhiteSpace(textResult) || pi.ExitCode != 0) {
+            if (String.IsNullOrWhiteSpace(textResult) || pi.ExitCode != 0)
+            {
                 textResult = (textResult ?? "") + "\n" + await pi.StandardError.ReadToEndAsync();
 
-                if (String.IsNullOrWhiteSpace(textResult)) {
+                if (String.IsNullOrWhiteSpace(textResult))
+                {
                     textResult = String.Empty;
                 }
             }
@@ -224,14 +254,16 @@ namespace Squirrel
         {
             return Task.WhenAll(
                 from partition in Partitioner.Create(source).GetPartitions(degreeOfParallelism)
-                select Task.Run(async () => {
+                select Task.Run(async () =>
+                {
                     using (partition)
                         while (partition.MoveNext())
                             await body(partition.Current);
                 }));
         }
 
-        static Lazy<string> directoryChars = new Lazy<string>(() => {
+        static Lazy<string> directoryChars = new Lazy<string>(() =>
+        {
             return "abcdefghijklmnopqrstuvwxyz" +
                 Enumerable.Range(0x03B0, 0x03FF - 0x03B0)   // Greek and Coptic
                     .Concat(Enumerable.Range(0x0400, 0x04FF - 0x0400)) // Cyrillic
@@ -241,7 +273,8 @@ namespace Squirrel
 
         public static string tempNameForIndex(int index, string prefix)
         {
-            if (index < directoryChars.Value.Length) {
+            if (index < directoryChars.Value.Length)
+            {
                 return prefix + directoryChars.Value[index];
             }
 
@@ -251,7 +284,7 @@ namespace Squirrel
         public static DirectoryInfo GetTempDirectory(string localAppDirectory)
         {
             var tempDir = Environment.GetEnvironmentVariable("SQUIRREL_TEMP");
-            tempDir = tempDir ?? Path.Combine(localAppDirectory ?? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SquirrelTemp");
+            tempDir = tempDir ?? Path.Combine(localAppDirectory ?? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Path.Combine("SquirrelTemp", DateTime.Now.Ticks.ToString()));
 
             var di = new DirectoryInfo(tempDir);
             if (!di.Exists) di.Create();
@@ -264,12 +297,14 @@ namespace Squirrel
             var di = GetTempDirectory(localAppDirectory);
             var tempDir = default(DirectoryInfo);
 
-            var names = Enumerable.Range(0, 1<<20).Select(x => tempNameForIndex(x, "temp"));
+            var names = Enumerable.Range(0, 1 << 20).Select(x => tempNameForIndex(x, "temp"));
 
-            foreach (var name in names) {
+            foreach (var name in names)
+            {
                 var target = Path.Combine(di.FullName, name);
 
-                if (!File.Exists(target) && !Directory.Exists(target)) {
+                if (!File.Exists(target) && !Directory.Exists(target))
+                {
                     Directory.CreateDirectory(target);
                     tempDir = new DirectoryInfo(target);
                     break;
@@ -284,13 +319,15 @@ namespace Squirrel
         public static IDisposable WithTempFile(out string path, string localAppDirectory = null)
         {
             var di = GetTempDirectory(localAppDirectory);
-            var names = Enumerable.Range(0, 1<<20).Select(x => tempNameForIndex(x, "temp"));
+            var names = Enumerable.Range(0, 1 << 20).Select(x => tempNameForIndex(x, "temp"));
 
             path = "";
-            foreach (var name in names) {
+            foreach (var name in names)
+            {
                 path = Path.Combine(di.FullName, name);
 
-                if (!File.Exists(path) && !Directory.Exists(path)) {
+                if (!File.Exists(path) && !Directory.Exists(path))
+                {
                     break;
                 }
             }
@@ -305,29 +342,37 @@ namespace Squirrel
 
             Log().Debug("Starting to delete folder: {0}", directoryPath);
 
-            if (!Directory.Exists(directoryPath)) {
+            if (!Directory.Exists(directoryPath))
+            {
                 Log().Warn("DeleteDirectory: does not exist - {0}", directoryPath);
                 return;
             }
 
             // From http://stackoverflow.com/questions/329355/cannot-delete-directory-with-directory-deletepath-true/329502#329502
             var files = new string[0];
-            try {
+            try
+            {
                 files = Directory.GetFiles(directoryPath);
-            } catch (UnauthorizedAccessException ex) {
+            }
+            catch (UnauthorizedAccessException ex)
+            {
                 var message = String.Format("The files inside {0} could not be read", directoryPath);
                 Log().Warn(message, ex);
             }
 
             var dirs = new string[0];
-            try {
+            try
+            {
                 dirs = Directory.GetDirectories(directoryPath);
-            } catch (UnauthorizedAccessException ex) {
+            }
+            catch (UnauthorizedAccessException ex)
+            {
                 var message = String.Format("The directories inside {0} could not be read", directoryPath);
                 Log().Warn(message, ex);
             }
 
-            var fileOperations = files.ForEachAsync(file => {
+            var fileOperations = files.ForEachAsync(file =>
+            {
                 File.SetAttributes(file, FileAttributes.Normal);
                 File.Delete(file);
             });
@@ -340,9 +385,12 @@ namespace Squirrel
             Log().Debug("Now deleting folder: {0}", directoryPath);
             File.SetAttributes(directoryPath, FileAttributes.Normal);
 
-            try {
+            try
+            {
                 Directory.Delete(directoryPath, false);
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 var message = String.Format("DeleteDirectory: could not delete - {0}", directoryPath);
                 Log().ErrorException(message, ex);
             }
@@ -362,14 +410,17 @@ namespace Squirrel
 
         static string find7Zip()
         {
-            if (ModeDetector.InUnitTestRunner()) {
+            if (ModeDetector.InUnitTestRunner())
+            {
                 var vendorDir = Path.Combine(
                     Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase.Replace("file:///", "")),
                     "..", "..", "..", "..",
                     "vendor", "7zip"
                 );
                 return FindHelperExecutable("7z.exe", new[] { vendorDir });
-            } else {
+            }
+            else
+            {
                 return FindHelperExecutable("7z.exe");
             }
         }
@@ -379,17 +430,21 @@ namespace Squirrel
             var sevenZip = find7Zip();
             var result = default(Tuple<int, string>);
 
-            try {
+            try
+            {
                 var cmd = sevenZip;
                 var args = String.Format("x \"{0}\" -tzip -mmt on -aoa -y -o\"{1}\" *", zipFilePath, outFolder);
-                if (Environment.OSVersion.Platform != PlatformID.Win32NT) {
+                if (Environment.OSVersion.Platform != PlatformID.Win32NT)
+                {
                     cmd = "wine";
                     args = sevenZip + " " + args;
                 }
 
                 result = await Utility.InvokeProcessAsync(cmd, args, CancellationToken.None);
                 if (result.Item1 != 0) throw new Exception(result.Item2);
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 Log().Error($"Failed to extract file {zipFilePath} to {outFolder}\n{ex.Message}");
                 throw;
             }
@@ -400,17 +455,21 @@ namespace Squirrel
             var sevenZip = find7Zip();
             var result = default(Tuple<int, string>);
 
-            try {
+            try
+            {
                 var cmd = sevenZip;
                 var args = String.Format("a \"{0}\" -tzip -aoa -y -mmt on *", zipFilePath);
-                if (Environment.OSVersion.Platform != PlatformID.Win32NT) {
+                if (Environment.OSVersion.Platform != PlatformID.Win32NT)
+                {
                     cmd = "wine";
                     args = sevenZip + " " + args;
                 }
 
                 result = await Utility.InvokeProcessAsync(cmd, args, CancellationToken.None, inFolder);
                 if (result.Item1 != 0) throw new Exception(result.Item2);
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 Log().Error($"Failed to extract file {zipFilePath} to {inFolder}\n{ex.Message}");
                 throw;
             }
@@ -426,7 +485,7 @@ namespace Squirrel
             return Path.Combine(rootAppDirectory, "app-" + version.ToString());
         }
 
-        public static string PackageDirectoryForAppDir(string rootAppDirectory) 
+        public static string PackageDirectoryForAppDir(string rootAppDirectory)
         {
             return Path.Combine(rootAppDirectory, "packages");
         }
@@ -441,14 +500,16 @@ namespace Squirrel
             var file = File.OpenRead(localReleaseFile);
 
             // NB: sr disposes file
-            using (var sr = new StreamReader(file, Encoding.UTF8)) {
+            using (var sr = new StreamReader(file, Encoding.UTF8))
+            {
                 return ReleaseEntry.ParseReleaseFile(sr.ReadToEnd());
             }
         }
-            
+
         public static ReleaseEntry FindCurrentVersion(IEnumerable<ReleaseEntry> localReleases)
         {
-            if (!localReleases.Any()) {
+            if (!localReleases.Any())
+            {
                 return null;
             }
 
@@ -470,7 +531,8 @@ namespace Squirrel
         public static bool IsHttpUrl(string urlOrPath)
         {
             var uri = default(Uri);
-            if (!Uri.TryCreate(urlOrPath, UriKind.Absolute, out uri)) {
+            if (!Uri.TryCreate(urlOrPath, UriKind.Absolute, out uri))
+            {
                 return false;
             }
 
@@ -480,7 +542,8 @@ namespace Squirrel
         public static Uri AppendPathToUri(Uri uri, string path)
         {
             var builder = new UriBuilder(uri);
-            if (!builder.Path.EndsWith("/")) {
+            if (!builder.Path.EndsWith("/"))
+            {
                 builder.Path += "/";
             }
 
@@ -497,7 +560,8 @@ namespace Squirrel
         {
             var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
 
-            foreach (var entry in newQuery) {
+            foreach (var entry in newQuery)
+            {
                 query[entry.Key] = entry.Value;
             }
 
@@ -509,9 +573,12 @@ namespace Squirrel
 
         public static void DeleteFileHarder(string path, bool ignoreIfFails = false)
         {
-            try {
+            try
+            {
                 Retry(() => File.Delete(path), 2);
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 if (ignoreIfFails) return;
 
                 LogHost.Default.ErrorException("Really couldn't delete file: " + path, ex);
@@ -521,9 +588,12 @@ namespace Squirrel
 
         public static async Task DeleteDirectoryOrJustGiveUp(string dir)
         {
-            try {
+            try
+            {
                 await Utility.DeleteDirectory(dir);
-            } catch {
+            }
+            catch
+            {
                 var message = String.Format("Uninstall failed to delete dir '{0}'", dir);
             }
         }
@@ -531,7 +601,8 @@ namespace Squirrel
         // http://stackoverflow.com/questions/3111669/how-can-i-determine-the-subsystem-used-by-a-given-net-assembly
         public static bool ExecutableUsesWin32Subsystem(string peImage)
         {
-            using (var s = new FileStream(peImage, FileMode.Open, FileAccess.Read)) {
+            using (var s = new FileStream(peImage, FileMode.Open, FileAccess.Read))
+            {
                 var rawPeSignatureOffset = new byte[4];
                 s.Seek(0x3c, SeekOrigin.Begin);
                 s.Read(rawPeSignatureOffset, 0, 4);
@@ -546,7 +617,8 @@ namespace Squirrel
                 s.Read(coffHeader, 0, 24);
 
                 byte[] signature = { (byte)'P', (byte)'E', (byte)'\0', (byte)'\0' };
-                for (int index = 0; index < 4; index++) {
+                for (int index = 0; index < 4; index++)
+                {
                     if (coffHeader[index] != signature[index]) throw new Exception("File is not a PE image");
                 }
 
@@ -578,22 +650,26 @@ namespace Squirrel
 
         public static void LogIfThrows(this IFullLogger This, LogLevel level, string message, Action block)
         {
-            try {
+            try
+            {
                 block();
-            } catch (Exception ex) {
-                switch (level) {
-                case LogLevel.Debug:
-                    This.DebugException(message ?? "", ex);
-                    break;
-                case LogLevel.Info:
-                    This.InfoException(message ?? "", ex);
-                    break;
-                case LogLevel.Warn:
-                    This.WarnException(message ?? "", ex);
-                    break;
-                case LogLevel.Error:
-                    This.ErrorException(message ?? "", ex);
-                    break;
+            }
+            catch (Exception ex)
+            {
+                switch (level)
+                {
+                    case LogLevel.Debug:
+                        This.DebugException(message ?? "", ex);
+                        break;
+                    case LogLevel.Info:
+                        This.InfoException(message ?? "", ex);
+                        break;
+                    case LogLevel.Warn:
+                        This.WarnException(message ?? "", ex);
+                        break;
+                    case LogLevel.Error:
+                        This.ErrorException(message ?? "", ex);
+                        break;
                 }
 
                 throw;
@@ -602,22 +678,26 @@ namespace Squirrel
 
         public static async Task LogIfThrows(this IFullLogger This, LogLevel level, string message, Func<Task> block)
         {
-            try {
+            try
+            {
                 await block();
-            } catch (Exception ex) {
-                switch (level) {
-                case LogLevel.Debug:
-                    This.DebugException(message ?? "", ex);
-                    break;
-                case LogLevel.Info:
-                    This.InfoException(message ?? "", ex);
-                    break;
-                case LogLevel.Warn:
-                    This.WarnException(message ?? "", ex);
-                    break;
-                case LogLevel.Error:
-                    This.ErrorException(message ?? "", ex);
-                    break;
+            }
+            catch (Exception ex)
+            {
+                switch (level)
+                {
+                    case LogLevel.Debug:
+                        This.DebugException(message ?? "", ex);
+                        break;
+                    case LogLevel.Info:
+                        This.InfoException(message ?? "", ex);
+                        break;
+                    case LogLevel.Warn:
+                        This.WarnException(message ?? "", ex);
+                        break;
+                    case LogLevel.Error:
+                        This.ErrorException(message ?? "", ex);
+                        break;
                 }
                 throw;
             }
@@ -625,22 +705,26 @@ namespace Squirrel
 
         public static async Task<T> LogIfThrows<T>(this IFullLogger This, LogLevel level, string message, Func<Task<T>> block)
         {
-            try {
+            try
+            {
                 return await block();
-            } catch (Exception ex) {
-                switch (level) {
-                case LogLevel.Debug:
-                    This.DebugException(message ?? "", ex);
-                    break;
-                case LogLevel.Info:
-                    This.InfoException(message ?? "", ex);
-                    break;
-                case LogLevel.Warn:
-                    This.WarnException(message ?? "", ex);
-                    break;
-                case LogLevel.Error:
-                    This.ErrorException(message ?? "", ex);
-                    break;
+            }
+            catch (Exception ex)
+            {
+                switch (level)
+                {
+                    case LogLevel.Debug:
+                        This.DebugException(message ?? "", ex);
+                        break;
+                    case LogLevel.Info:
+                        This.InfoException(message ?? "", ex);
+                        break;
+                    case LogLevel.Warn:
+                        This.WarnException(message ?? "", ex);
+                        break;
+                    case LogLevel.Error:
+                        This.ErrorException(message ?? "", ex);
+                        break;
                 }
                 throw;
             }
@@ -720,7 +804,8 @@ namespace Squirrel
             // comput the hash of the name space ID concatenated with the 
             // name (step 4)
             byte[] hash;
-            using (var algorithm = SHA1.Create()) {
+            using (var algorithm = SHA1.Create())
+            {
                 algorithm.TransformBlock(namespaceBytes, 0, namespaceBytes.Length, null, 0);
                 algorithm.TransformFinalBlock(nameBytes, 0, nameBytes.Length);
                 hash = algorithm.Hash;
@@ -785,8 +870,10 @@ namespace Squirrel
             int bytesReturned = 0;
             var pids = new int[2048];
 
-            fixed(int* p = pids) {
-                if (!NativeMethods.EnumProcesses((IntPtr)p, sizeof(int) * pids.Length, out bytesReturned)) {
+            fixed (int* p = pids)
+            {
+                if (!NativeMethods.EnumProcesses((IntPtr)p, sizeof(int) * pids.Length, out bytesReturned))
+                {
                     throw new Win32Exception("Failed to enumerate processes");
                 }
 
@@ -795,20 +882,25 @@ namespace Squirrel
 
             return Enumerable.Range(0, bytesReturned / sizeof(int))
                 .Where(i => pids[i] > 0)
-                .Select(i => {
-                    try {
+                .Select(i =>
+                {
+                    try
+                    {
                         var hProcess = NativeMethods.OpenProcess(ProcessAccess.QueryLimitedInformation, false, pids[i]);
                         if (hProcess == IntPtr.Zero) throw new Win32Exception();
 
                         var sb = new StringBuilder(256);
                         var capacity = sb.Capacity;
-                        if (!NativeMethods.QueryFullProcessImageName(hProcess, 0, sb, ref capacity)) {
+                        if (!NativeMethods.QueryFullProcessImageName(hProcess, 0, sb, ref capacity))
+                        {
                             throw new Win32Exception();
                         }
 
                         NativeMethods.CloseHandle(hProcess);
                         return Tuple.Create(sb.ToString(), pids[i]);
-                    } catch (Exception) {
+                    }
+                    catch (Exception)
+                    {
                         return Tuple.Create(default(string), pids[i]);
                     }
                 })
@@ -822,7 +914,8 @@ namespace Squirrel
 
         public SingleGlobalInstance(string key, TimeSpan timeOut)
         {
-            if (ModeDetector.InUnitTestRunner()) {
+            if (ModeDetector.InUnitTestRunner())
+            {
                 return;
             }
 
@@ -832,12 +925,16 @@ namespace Squirrel
             st.Start();
 
             var fh = default(FileStream);
-            while (st.Elapsed < timeOut) {
-                try {
+            while (st.Elapsed < timeOut)
+            {
+                try
+                {
                     fh = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Delete);
                     fh.Write(new byte[] { 0xba, 0xad, 0xf0, 0x0d, }, 0, 4);
                     break;
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     this.Log().WarnException("Failed to grab lockfile, will retry: " + path, ex);
                     Thread.Sleep(250);
                 }
@@ -845,11 +942,13 @@ namespace Squirrel
 
             st.Stop();
 
-            if (fh == null) {
+            if (fh == null)
+            {
                 throw new Exception("Couldn't acquire lock, is another instance running");
             }
 
-            handle = Disposable.Create(() => {
+            handle = Disposable.Create(() =>
+            {
                 fh.Dispose();
                 File.Delete(path);
             });
@@ -857,7 +956,8 @@ namespace Squirrel
 
         public void Dispose()
         {
-            if (ModeDetector.InUnitTestRunner()) {
+            if (ModeDetector.InUnitTestRunner())
+            {
                 return;
             }
 
